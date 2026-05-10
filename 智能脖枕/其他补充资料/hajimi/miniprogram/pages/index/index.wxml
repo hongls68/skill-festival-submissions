@@ -1,0 +1,151 @@
+<navigation-bar title="" back="{{false}}" color="#2d2d2d" background="#f7f5f2"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y>
+  <view class="page">
+
+    <view class="greeting">
+      <view class="greeting-text">{{greeting}}</view>
+      <view class="greeting-sub">今天颈部感觉如何？</view>
+    </view>
+
+    <view class="device-card" bindtap="onDeviceTap">
+      <view class="device-left">
+        <view class="device-icon-badge">
+          <view class="svg-icon icon-bluetooth"></view>
+        </view>
+        <view class="device-info">
+          <view class="device-name">
+            <text>FLYF的智能颈枕</text>
+            <view class="device-online-dot"></view>
+          </view>
+          <view class="device-status">已连接 · 电量 86%</view>
+        </view>
+      </view>
+      <view class="svg-icon icon-chevron-right device-arrow"></view>
+    </view>
+
+    <view class="pillow-card">
+      <view class="pillow-header">
+        <view class="title-with-icon">
+          <view class="svg-icon icon-activity"></view>
+          <view class="pillow-title">实时压力</view>
+        </view>
+        <view class="time-pill">
+          <view class="svg-icon icon-clock-sm"></view>
+          <text>{{lastUpdated}}</text>
+        </view>
+      </view>
+
+      <view class="pillow-stage">
+        <view class="pillow-shell">
+          <view class="pillow-arm pillow-left"></view>
+          <view class="pillow-arm pillow-right"></view>
+          <view class="pillow-bridge"></view>
+          <view class="pillow-cervical"></view>
+          <view class="pillow-inner-hole"></view>
+          <view class="pillow-opening"></view>
+          <view class="pillow-highlight pillow-highlight-left"></view>
+          <view class="pillow-highlight pillow-highlight-right"></view>
+          <view class="pillow-highlight pillow-highlight-bottom"></view>
+        </view>
+
+        <block wx:for="{{zones}}" wx:key="id">
+          <view class="pressure-zone" style="{{item.style}}">
+            <view class="pressure-value" wx:if="{{item.active}}">{{item.pressure}}</view>
+          </view>
+        </block>
+      </view>
+
+      <view class="legend-row">
+        <view class="legend-item">
+          <view class="legend-dot legend-low"></view>
+          <text>舒适</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-dot legend-mid"></view>
+          <text>适中</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-dot legend-high"></view>
+          <text>偏紧</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="stats-row">
+      <view class="stat-card">
+        <view class="stat-icon-wrap stat-icon-pressure">
+          <view class="svg-icon icon-gauge"></view>
+        </view>
+        <view class="stat-value">{{maxPressure}}</view>
+        <view class="stat-label">最高压力</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-icon-wrap stat-icon-zone">
+          <view class="svg-icon icon-grid"></view>
+        </view>
+        <view class="stat-value">{{activeCount}}</view>
+        <view class="stat-label">受力区域</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-icon-wrap stat-icon-posture">
+          <view class="svg-icon icon-body"></view>
+        </view>
+        <view class="stat-value">{{postureScore}}</view>
+        <view class="stat-label">姿势评分</view>
+      </view>
+    </view>
+
+    <view class="zone-card">
+      <view class="zone-header">
+        <view class="title-with-icon">
+          <view class="svg-icon icon-layers"></view>
+          <view class="zone-title">分区详情</view>
+        </view>
+      </view>
+
+      <view class="zone-list">
+        <view class="zone-item" wx:for="{{zones}}" wx:key="id">
+          <view class="zone-left">
+            <view class="zone-dot" style="background: {{item.dotColor}}"></view>
+            <view class="zone-info">
+              <view class="zone-name">{{item.name}}</view>
+              <view class="zone-level">{{item.strengthLabel}}</view>
+            </view>
+          </view>
+          <view class="zone-right">
+            <view class="zone-progress">
+              <view class="zone-progress-fill" style="width: {{item.pressure}}%; background: {{item.barColor}};"></view>
+            </view>
+            <view class="zone-number">{{item.pressure}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="insight-card" wx:if="{{insightText}}">
+      <view class="insight-icon-wrap">
+        <view class="svg-icon icon-lightbulb"></view>
+      </view>
+      <view class="insight-content">
+        <view class="insight-title">小贴士</view>
+        <view class="insight-text">{{insightText}}</view>
+      </view>
+    </view>
+
+    <view class="action-row">
+      <button class="action-btn secondary" bindtap="generateMockSignal">
+        <view class="btn-inner">
+          <view class="svg-icon icon-refresh"></view>
+          <text>刷新数据</text>
+        </view>
+      </button>
+      <button class="action-btn primary" bindtap="toggleSimulation">
+        <view class="btn-inner">
+          <view class="svg-icon {{isSimulating ? 'icon-pause' : 'icon-play'}}"></view>
+          <text>{{isSimulating ? '暂停监测' : '开始监测'}}</text>
+        </view>
+      </button>
+    </view>
+
+  </view>
+</scroll-view>

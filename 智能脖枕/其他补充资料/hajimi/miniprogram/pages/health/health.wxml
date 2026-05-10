@@ -1,0 +1,274 @@
+<navigation-bar title="健康数据" back="{{false}}" color="#2d2d2d" background="#f7f5f2"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y>
+  <view class="page">
+
+    <view class="overview-card">
+      <view class="overview-header">
+        <view class="overview-title">今日概览</view>
+        <view class="overview-date">{{todayDate}}</view>
+      </view>
+      <view class="overview-grid">
+        <view class="overview-item">
+          <view class="overview-stat-icon svg-icon icon-award"></view>
+          <view class="overview-value score-color">{{postureScore}}</view>
+          <view class="overview-label">姿势评分</view>
+        </view>
+        <view class="overview-item">
+          <view class="overview-stat-icon svg-icon icon-clock"></view>
+          <view class="overview-value">{{wearTime}}</view>
+          <view class="overview-label">佩戴时长</view>
+        </view>
+        <view class="overview-item">
+          <view class="overview-stat-icon svg-icon icon-bell"></view>
+          <view class="overview-value warn-color">{{alertCount}}</view>
+          <view class="overview-label">姿势提醒</view>
+        </view>
+        <view class="overview-item">
+          <view class="overview-stat-icon svg-icon icon-gauge"></view>
+          <view class="overview-value">{{avgPressure}}</view>
+          <view class="overview-label">平均压力</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-label"><view class="svg-icon section-svg-icon icon-activity"></view><text>压力趋势</text></view>
+    <view class="chart-card">
+      <view class="chart-header">
+        <view class="chart-tabs">
+          <view
+            class="chart-tab {{chartRange === item ? 'tab-active' : ''}}"
+            wx:for="{{chartRanges}}"
+            wx:key="*this"
+            data-range="{{item}}"
+            bindtap="setChartRange"
+          >{{item}}</view>
+        </view>
+        <view class="chart-avg">
+          <text class="chart-avg-label">均值</text>
+          <text class="chart-avg-value">{{chartAvg}}</text>
+        </view>
+      </view>
+
+      <view class="chart-summary-grid">
+        <view class="chart-summary-item">
+          <text class="summary-label">峰值</text>
+          <text class="summary-value warn-color">{{chartPeak}}</text>
+          <text class="summary-desc">{{chartPeakLabel}}</text>
+        </view>
+        <view class="chart-summary-item">
+          <text class="summary-label">低值</text>
+          <text class="summary-value">{{chartLowest}}</text>
+          <text class="summary-desc">压力最低</text>
+        </view>
+        <view class="chart-summary-item">
+          <text class="summary-label">预警</text>
+          <text class="summary-value">{{chartAlertCount}}</text>
+          <text class="summary-desc">超过阈值</text>
+        </view>
+        <view class="chart-summary-item">
+          <text class="summary-label">变化</text>
+          <text class="summary-value">{{chartTrendDelta}}</text>
+          <text class="summary-desc">{{chartTrendText}}</text>
+        </view>
+      </view>
+
+      <view class="line-chart-wrap">
+        <svg viewBox="0 0 {{lineChart.svgWidth}} {{lineChart.svgHeight}}" class="line-chart-svg" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(74,124,111,0.28)"/>
+              <stop offset="100%" stop-color="rgba(74,124,111,0.02)"/>
+            </linearGradient>
+          </defs>
+          <line x1="42" y1="24" x2="558" y2="24" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
+          <line x1="42" y1="67" x2="558" y2="67" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
+          <line x1="42" y1="110" x2="558" y2="110" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
+          <line x1="42" y1="153" x2="558" y2="153" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
+          <line x1="42" y1="{{lineChart.thresholdY}}" x2="558" y2="{{lineChart.thresholdY}}" stroke="rgba(232,130,92,0.35)" stroke-width="1.5" stroke-dasharray="6 6"/>
+          <text x="550" y="{{lineChart.thresholdY - 8}}" text-anchor="end" fill="#e8825c" font-size="10">预警线 60</text>
+          <path d="{{lineChart.areaD}}" fill="url(#areaGrad)"/>
+          <path d="{{lineChart.pathD}}" fill="none" stroke="#4a7c6f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <block wx:for="{{lineChart.points}}" wx:key="x">
+            <circle cx="{{item.x}}" cy="{{item.y}}" r="7" fill="#ffffff" stroke="{{item.color}}" stroke-width="3"/>
+            <text x="{{item.x}}" y="{{item.y - 14}}" text-anchor="middle" fill="{{item.color}}" font-size="11" font-weight="600">{{item.value}}</text>
+          </block>
+        </svg>
+        <view class="chart-y-labels">
+          <text class="y-lbl">100</text>
+          <text class="y-lbl">75</text>
+          <text class="y-lbl">50</text>
+          <text class="y-lbl">25</text>
+          <text class="y-lbl">0</text>
+        </view>
+      </view>
+
+      <view class="chart-bar-section">
+        <view class="chart-bar-row">
+          <view class="bar-group" wx:for="{{chartData}}" wx:key="label">
+            <view class="bar-value {{item.isPeak ? 'bar-value-peak' : ''}}">{{item.value}}</view>
+            <view class="bar-shell">
+              <view class="bar" style="height: {{item.percent}}%; background: {{item.gradient}};"></view>
+            </view>
+            <text class="bar-label">{{item.label}}</text>
+            <text class="bar-level" style="color: {{item.color}};">{{item.level}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="chart-legend">
+        <view class="chart-legend-item">
+          <view class="legend-dot legend-normal"></view>
+          <text>正常范围</text>
+        </view>
+        <view class="chart-legend-item">
+          <view class="legend-dot legend-warn"></view>
+          <text>压力偏高</text>
+        </view>
+        <view class="chart-legend-item">
+          <view class="legend-line"></view>
+          <text>趋势曲线</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-label"><view class="svg-icon section-svg-icon icon-moon"></view><text>睡眠报告</text></view>
+    <view class="sleep-card">
+      <view class="sleep-header">
+        <view class="sleep-title"><view class="svg-icon sleep-svg-icon icon-moon"></view><text>昨晚睡眠</text></view>
+        <view class="sleep-quality">
+          <view class="quality-dot"></view>
+          <text>{{sleepQuality}}</text>
+        </view>
+      </view>
+      <view class="sleep-stats">
+        <view class="sleep-stat">
+          <view class="sleep-stat-value">{{sleepDuration}}</view>
+          <view class="sleep-stat-label">总时长</view>
+        </view>
+        <view class="sleep-stat">
+          <view class="sleep-stat-value">{{deepSleep}}</view>
+          <view class="sleep-stat-label">深睡时长</view>
+        </view>
+        <view class="sleep-stat">
+          <view class="sleep-stat-value">{{turnCount}}</view>
+          <view class="sleep-stat-label">翻身次数</view>
+        </view>
+        <view class="sleep-stat">
+          <view class="sleep-stat-value">{{neckMorning}}</view>
+          <view class="sleep-stat-label">晨起颈部</view>
+        </view>
+      </view>
+      <view class="sleep-timeline">
+        <view class="sleep-timeline-labels">
+          <text>23:00</text>
+          <text>02:00</text>
+          <text>05:00</text>
+          <text>06:32</text>
+        </view>
+        <view class="sleep-bar">
+          <view class="sleep-segment seg-deep" style="width: 35%;"></view>
+          <view class="sleep-segment seg-light" style="width: 40%;"></view>
+          <view class="sleep-segment seg-rem" style="width: 15%;"></view>
+          <view class="sleep-segment seg-awake" style="width: 10%;"></view>
+        </view>
+        <view class="sleep-legend">
+          <view class="sleep-legend-item"><view class="seg-dot seg-deep"></view>深睡</view>
+          <view class="sleep-legend-item"><view class="seg-dot seg-light"></view>浅睡</view>
+          <view class="sleep-legend-item"><view class="seg-dot seg-rem"></view>REM</view>
+          <view class="sleep-legend-item"><view class="seg-dot seg-awake"></view>清醒</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-label"><view class="svg-icon section-svg-icon icon-user-check"></view><text>姿势评估</text></view>
+    <view class="posture-card">
+      <view class="posture-score-ring">
+        <view class="posture-ring-bg"></view>
+        <view class="posture-ring-fill" style="--fill: {{postureDeg}}deg;"></view>
+        <view class="posture-ring-text">
+          <view class="posture-ring-value">{{postureScore}}</view>
+          <view class="posture-ring-label">综合评分</view>
+        </view>
+      </view>
+      <view class="posture-details">
+        <view class="posture-item">
+          <view class="posture-item-label">左右平衡</view>
+          <view class="posture-item-bar">
+            <view class="posture-item-fill" style="width: {{leftRightBalance}}%;"></view>
+          </view>
+          <view class="posture-item-value">{{leftRightBalance}}%</view>
+        </view>
+        <view class="posture-item">
+          <view class="posture-item-label">前后支撑</view>
+          <view class="posture-item-bar">
+            <view class="posture-item-fill" style="width: {{frontBackSupport}}%;"></view>
+          </view>
+          <view class="posture-item-value">{{frontBackSupport}}%</view>
+        </view>
+        <view class="posture-item">
+          <view class="posture-item-label">压力均匀度</view>
+          <view class="posture-item-bar">
+            <view class="posture-item-fill" style="width: {{pressureUniformity}}%;"></view>
+          </view>
+          <view class="posture-item-value">{{pressureUniformity}}%</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-label">
+      <view class="svg-icon section-svg-icon icon-heart-pulse"></view>
+      <text>健康建议</text>
+    </view>
+    <view class="tips-card">
+      <view class="tip-item" wx:for="{{healthTips}}" wx:key="*this">
+        <view class="tip-dot"></view>
+        <text class="tip-text">{{item}}</text>
+      </view>
+    </view>
+
+    <view class="section-label ai-section-label">
+      <view class="svg-icon section-svg-icon icon-sparkles"></view>
+      <text>AI 智能分析</text>
+      <view class="ai-badge">AI 生成</view>
+    </view>
+    <view class="ai-card">
+      <view class="ai-header">
+        <view class="ai-avatar">
+          <view class="svg-icon ai-avatar-icon icon-sparkles"></view>
+        </view>
+        <view class="ai-header-info">
+          <view class="ai-header-name">颈枕健康助手</view>
+          <view class="ai-header-desc">基于您的数据智能分析</view>
+        </view>
+      </view>
+
+      <view class="ai-tips-list" wx:if="{{aiLoaded}}">
+        <view class="ai-tip-item" wx:for="{{aiTips}}" wx:key="id">
+          <view class="ai-tip-tag">{{item.tag}}</view>
+          <view class="ai-tip-text">{{item.text}}</view>
+        </view>
+      </view>
+
+      <view class="ai-loading" wx:if="{{aiLoading}}">
+        <view class="ai-loading-dots">
+          <view class="ai-dot"></view>
+          <view class="ai-dot"></view>
+          <view class="ai-dot"></view>
+        </view>
+        <text class="ai-loading-text">AI 正在分析您的健康数据...</text>
+      </view>
+
+      <view class="ai-footer">
+        <view class="ai-disclaimer">
+          <view class="svg-icon ai-disclaimer-icon icon-info"></view>
+          <text>以上内容由 AI 生成，仅供参考，不构成医疗建议</text>
+        </view>
+        <button class="ai-refresh-btn" bindtap="loadAiTips" disabled="{{aiLoading}}">
+          <view class="svg-icon ai-refresh-icon icon-refresh"></view>
+          <text>{{aiLoading ? '分析中...' : '重新分析'}}</text>
+        </button>
+      </view>
+    </view>
+
+  </view>
+</scroll-view>

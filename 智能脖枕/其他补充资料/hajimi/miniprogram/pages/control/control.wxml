@@ -1,0 +1,160 @@
+<navigation-bar title="控制中心" back="{{false}}" color="#2d2d2d" background="#f7f5f2"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y>
+  <view class="page">
+
+    <view class="section-label">
+      <view class="svg-icon icon-zap"></view>
+      <text>快捷模式</text>
+    </view>
+    <view class="mode-grid">
+      <view
+        class="mode-card {{activeMode === item.id ? 'mode-active' : ''}}"
+        wx:for="{{modes}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="selectMode"
+      >
+        <view class="mode-emoji">{{item.emoji}}</view>
+        <view class="mode-name">{{item.name}}</view>
+        <view class="mode-desc">{{item.desc}}</view>
+      </view>
+    </view>
+
+    <view class="section-label">
+      <view class="svg-icon icon-wind"></view>
+      <text>气囊调节</text>
+    </view>
+    <view class="airbag-card">
+      <view class="airbag-item" wx:for="{{airbags}}" wx:key="id">
+        <view class="airbag-head">
+          <view class="airbag-name">{{item.name}}</view>
+          <view class="airbag-value">{{item.value}}%</view>
+        </view>
+        <slider
+          class="airbag-slider"
+          min="0" max="100"
+          value="{{item.value}}"
+          activeColor="#4a7c6f"
+          backgroundColor="#f0ede8"
+          block-size="20"
+          block-color="#4a7c6f"
+          data-id="{{item.id}}"
+          bindchange="onAirbagChange"
+        />
+      </view>
+      <view class="airbag-actions">
+        <button class="airbag-btn" bindtap="resetAirbags">
+          <view class="svg-icon icon-rotate-ccw"></view>
+          <text>全部复位</text>
+        </button>
+        <button class="airbag-btn airbag-btn-primary" bindtap="autoAdjust">
+          <view class="svg-icon icon-magic"></view>
+          <text>智能调节</text>
+        </button>
+      </view>
+    </view>
+
+    <view class="section-label">
+      <view class="svg-icon icon-hand"></view>
+      <text>按摩功能</text>
+    </view>
+    <view class="massage-card">
+      <view class="massage-toggle">
+        <view class="massage-toggle-info">
+          <view class="massage-toggle-title">按摩开关</view>
+          <view class="massage-toggle-desc">{{massageOn ? '按摩进行中' : '已关闭'}}</view>
+        </view>
+        <switch
+          checked="{{massageOn}}"
+          color="#4a7c6f"
+          bindchange="toggleMassage"
+        />
+      </view>
+
+      <view class="massage-options" wx:if="{{massageOn}}">
+        <view class="massage-row">
+          <view class="massage-label">按摩模式</view>
+          <view class="massage-chips">
+            <view
+              class="massage-chip {{massageMode === item.id ? 'chip-active' : ''}}"
+              wx:for="{{massageModes}}"
+              wx:key="id"
+              data-id="{{item.id}}"
+              bindtap="selectMassageMode"
+            >{{item.name}}</view>
+          </view>
+        </view>
+
+        <view class="massage-row">
+          <view class="massage-label">按摩强度</view>
+          <view class="intensity-row">
+            <view
+              class="intensity-dot {{intensity >= index + 1 ? 'dot-filled' : ''}}"
+              wx:for="{{5}}"
+              wx:key="*this"
+              data-level="{{index + 1}}"
+              bindtap="setIntensity"
+            ></view>
+          </view>
+        </view>
+
+        <view class="massage-row">
+          <view class="massage-label">定时按摩</view>
+          <view class="massage-chips">
+            <view
+              class="massage-chip {{timerMinutes === item ? 'chip-active' : ''}}"
+              wx:for="{{timerOptions}}"
+              wx:key="*this"
+              data-min="{{item}}"
+              bindtap="setTimer"
+            >{{item}}分钟</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-label">
+      <view class="svg-icon icon-thermometer"></view>
+      <text>温度控制</text>
+    </view>
+    <view class="temp-card">
+      <view class="temp-toggle">
+        <view class="temp-toggle-info">
+          <view class="temp-toggle-title">加热功能</view>
+          <view class="temp-toggle-desc">{{heatingOn ? '加热中' : '已关闭'}}</view>
+        </view>
+        <switch
+          checked="{{heatingOn}}"
+          color="#e8825c"
+          bindchange="toggleHeating"
+        />
+      </view>
+
+      <view class="temp-control" wx:if="{{heatingOn}}">
+        <view class="temp-display">
+          <view class="temp-current">{{currentTemp}}°C</view>
+          <view class="temp-target">目标 {{targetTemp}}°C</view>
+        </view>
+        <slider
+          min="35" max="45"
+          value="{{targetTemp}}"
+          activeColor="#e8825c"
+          backgroundColor="#f0ede8"
+          block-size="22"
+          block-color="#e8825c"
+          bindchange="onTempChange"
+        />
+        <view class="temp-presets">
+          <view
+            class="temp-preset {{targetTemp === item ? 'preset-active' : ''}}"
+            wx:for="{{tempPresets}}"
+            wx:key="*this"
+            data-temp="{{item}}"
+            bindtap="setTempPreset"
+          >{{item}}°C</view>
+        </view>
+      </view>
+    </view>
+
+  </view>
+</scroll-view>
